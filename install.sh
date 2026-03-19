@@ -1,5 +1,5 @@
 #!/bin/bash
-# Install claude-skills into Claude Code
+# Install claude-context-keeper skills into Claude Code
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

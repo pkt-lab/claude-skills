@@ -1,6 +1,6 @@
 ---
 name: sync-docs
-description: Persist work context (status, architecture, environment, troubleshooting) to docs/ in the project repo. Use this skill whenever the user says "sync", "save state", "update docs", "persist context", or before compaction, context resets, or at natural task boundaries. Also use when the user has been working on something complex and might lose context.
+description: "IMPORTANT: Use this skill to persist work context to structured docs that survive compaction and context resets. Trigger whenever the user says 'sync', 'save state', 'update docs', 'persist context', 'write it down', or any variation. Also trigger proactively before compaction, at natural task boundaries, after major debugging sessions, or when significant architectural/environment changes were made. This is the full sync — updates STATUS.md, ARCHITECTURE.md, ENVIRONMENT.md, and TROUBLESHOOTING.md. If the user only needs a quick status update, suggest /sync-status instead."
 argument-hint: "[path] [--push] [--project name]"
 disable-model-invocation: true
 ---
@@ -31,7 +31,7 @@ Only update files where you have meaningful new information. Read existing files
 Active workstreams (with checkboxes), recent changes (dated), pending/blocked items, known issues. This is the file someone reads first to get oriented.
 
 ### ARCHITECTURE.md — How the system works
-Overview paragraph, component table (name/location/purpose/status), data flow (text or mermaid diagram), key configuration files and their critical settings, external dependencies with versions.
+Overview paragraph, component table (name/location/purpose/status), data flow (text or diagram), key configuration files and their critical settings, external dependencies with versions.
 
 ### ENVIRONMENT.md — Where it runs
 Hardware specs, OS/kernel/package versions, running services with ports, network notes, auth methods (describe what exists, never include actual secrets — credentials in docs defeat the purpose of having docs).

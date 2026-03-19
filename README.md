@@ -1,10 +1,10 @@
-# claude-skills
+# claude-context-keeper
 
-Claude Code skills for persistent work context management.
+Keep track of what Claude did — so the next session doesn't start from scratch.
 
 ## Problem
 
-After compaction, context window reset, or long work sessions, Claude loses critical details — architecture decisions, environment specifics, debugging history, and work status. These skills persist knowledge to structured markdown files in your project's `docs/` directory, surviving any context loss.
+When Claude's context gets compacted, the session ends, or you start a fresh agent, all the work context is gone — architecture decisions, environment details, debugging history, current status. These skills automatically persist that knowledge to structured markdown files in your project's `docs/` directory. Any future Claude session can read them and pick up exactly where the last one left off.
 
 ## Skills
 
@@ -27,8 +27,8 @@ Update ARCHITECTURE.md only. Run after adding/removing components, changing conf
 ## Installation
 
 ```bash
-git clone https://github.com/pkt-lab/claude-skills.git ~/claude-skills
-cd ~/claude-skills && ./install.sh
+git clone https://github.com/pkt-lab/claude-context-keeper.git ~/claude-context-keeper
+cd ~/claude-context-keeper && ./install.sh
 ```
 
 This creates symlinks in `~/.claude/skills/` pointing to the repo. Restart Claude Code to see the `/sync-*` commands in autocomplete.
@@ -36,9 +36,9 @@ This creates symlinks in `~/.claude/skills/` pointing to the repo. Restart Claud
 Or manually:
 ```bash
 mkdir -p ~/.claude/skills
-ln -sfn ~/claude-skills/skills/sync-docs ~/.claude/skills/sync-docs
-ln -sfn ~/claude-skills/skills/sync-status ~/.claude/skills/sync-status
-ln -sfn ~/claude-skills/skills/sync-arch ~/.claude/skills/sync-arch
+ln -sfn ~/claude-context-keeper/skills/sync-docs ~/.claude/skills/sync-docs
+ln -sfn ~/claude-context-keeper/skills/sync-status ~/.claude/skills/sync-status
+ln -sfn ~/claude-context-keeper/skills/sync-arch ~/.claude/skills/sync-arch
 ```
 
 ## Usage
@@ -62,8 +62,6 @@ ln -sfn ~/claude-skills/skills/sync-arch ~/.claude/skills/sync-arch
 ```
 
 ## Output Structure
-
-Docs live alongside your code:
 
 ```
 <project-root>/
@@ -89,12 +87,13 @@ Decisions are recorded in **git commit messages** — `git log` is the decision 
 ## Repo Structure
 
 ```
-claude-skills/
+claude-context-keeper/
 ├── skills/
-│   ├── sync-docs/SKILL.md
-│   ├── sync-status/SKILL.md
-│   └── sync-arch/SKILL.md
+│   ├── sync-docs/SKILL.md     # full context sync
+│   ├── sync-status/SKILL.md   # quick status update
+│   └── sync-arch/SKILL.md     # architecture update
 ├── install.sh
+├── LICENSE
 └── README.md
 ```
 
