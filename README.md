@@ -26,14 +26,29 @@ Update ARCHITECTURE.md only. Run after adding/removing components, changing conf
 
 ## Installation
 
+### Via plugin marketplace (recommended)
+
+```bash
+# Add as a marketplace source
+/plugin marketplace add pkt-lab/claude-context-keeper
+
+# Then install
+/plugin install context-keeper@pkt-lab-claude-context-keeper
+```
+
+After installing as a plugin, skills are namespaced: `/context-keeper:sync-docs`, `/context-keeper:sync-status`, `/context-keeper:sync-arch`.
+
+### Via git clone + symlink
+
 ```bash
 git clone https://github.com/pkt-lab/claude-context-keeper.git ~/claude-context-keeper
 cd ~/claude-context-keeper && ./install.sh
 ```
 
-This creates symlinks in `~/.claude/skills/` pointing to the repo. Restart Claude Code to see the `/sync-*` commands in autocomplete.
+This creates symlinks in `~/.claude/skills/` so skills appear as `/sync-docs`, `/sync-status`, `/sync-arch`.
 
-Or manually:
+### Manual
+
 ```bash
 mkdir -p ~/.claude/skills
 ln -sfn ~/claude-context-keeper/skills/sync-docs ~/.claude/skills/sync-docs
@@ -88,11 +103,13 @@ Decisions are recorded in **git commit messages** — `git log` is the decision 
 
 ```
 claude-context-keeper/
+├── .claude-plugin/
+│   └── plugin.json            # plugin manifest for marketplace install
 ├── skills/
 │   ├── sync-docs/SKILL.md     # full context sync
 │   ├── sync-status/SKILL.md   # quick status update
 │   └── sync-arch/SKILL.md     # architecture update
-├── install.sh
+├── install.sh                 # symlink installer (alternative to plugin)
 ├── LICENSE
 └── README.md
 ```

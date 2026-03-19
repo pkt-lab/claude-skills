@@ -1,0 +1,12 @@
+{
+  "name": "context-keeper",
+  "version": "1.0.0",
+  "description": "Persist work context to structured project docs — recover full context after compaction, session switches, or new agent starts",
+  "author": {
+    "name": "pkt-lab",
+    "url": "https://github.com/pkt-lab"
+  },
+  "repository": "https://github.com/pkt-lab/claude-context-keeper",
+  "license": "MIT",
+  "keywords": ["docs", "context", "sync", "architecture", "status", "persistence"]
+}

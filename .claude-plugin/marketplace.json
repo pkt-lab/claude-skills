@@ -1,0 +1,22 @@
+{
+  "name": "pkt-lab-claude-context-keeper",
+  "owner": {
+    "name": "pkt-lab"
+  },
+  "metadata": {
+    "description": "Claude Code skills for persisting work context to project docs"
+  },
+  "plugins": [
+    {
+      "name": "context-keeper",
+      "source": ".",
+      "description": "Persist work context to structured project docs — recover full context after compaction, session switches, or new agent starts",
+      "version": "1.0.0",
+      "author": { "name": "pkt-lab" },
+      "repository": "https://github.com/pkt-lab/claude-context-keeper",
+      "license": "MIT",
+      "keywords": ["docs", "context", "sync", "architecture", "status"],
+      "category": "productivity"
+    }
+  ]
+}
