@@ -50,8 +50,8 @@ ln -sf ~/claude-skills/commands/*.md ~/.claude/commands/
 /sync-status ~/infra-docs
 
 # Multi-project repo with auto-push
-/sync-docs ~/infra-docs --project gb10 --push
-/sync-status ~/infra-docs --project qnx-hv --push
+/sync-docs ~/infra-docs --project myapp --push
+/sync-status ~/infra-docs --project backend --push
 
 # Just architecture, auto-push
 /sync-arch ~/my-project --push
@@ -66,10 +66,10 @@ ln -sf ~/claude-skills/commands/*.md ~/.claude/commands/
 ├── ENVIRONMENT.md      # Hardware, software, services, network
 └── TROUBLESHOOTING.md  # Known issues, root causes, fixes
 
-# With --project gb10:
+# With --project myapp:
 <target>/
 └── docs/
-    └── gb10/
+    └── myapp/
         ├── STATUS.md
         ├── ARCHITECTURE.md
         └── ...

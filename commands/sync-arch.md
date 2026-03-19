@@ -14,7 +14,7 @@ Examples:
 ```
 /sync-arch
 /sync-arch ~/my-project --push
-/sync-arch ~/infra-docs --project gb10 --push
+/sync-arch ~/infra-docs --project myapp --push
 ```
 
 ## Steps

@@ -15,8 +15,8 @@ Examples:
 /sync-docs                                    # current dir
 /sync-docs ~/my-project                       # specific repo
 /sync-docs --push                             # current dir + push
-/sync-docs ~/infra-docs --project gb10        # scoped under docs/gb10/
-/sync-docs ~/infra-docs --project gb10 --push # scoped + push
+/sync-docs ~/infra-docs --project myapp        # scoped under docs/myapp/
+/sync-docs ~/infra-docs --project myapp --push # scoped + push
 ```
 
 ## What to Capture
