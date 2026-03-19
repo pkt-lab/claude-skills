@@ -1,34 +1,23 @@
 ---
 name: sync-status
-description: Quick update of STATUS.md in docs/. Lightweight, run frequently before compaction or at task boundaries.
+description: Quick update of STATUS.md in project docs/. Use whenever the user says "update status", "what's the state", or before switching tasks, compaction, or ending a session. Lighter than /sync-docs — only touches STATUS.md.
+argument-hint: "[path] [--push] [--project name]"
 disable-model-invocation: true
 ---
 
-# /sync-status — Quick Status Update
+# Quick Status Update
 
-Lightweight version of /sync-docs. Only updates `STATUS.md` with current workstream status, recent changes, and blockers. Designed to be run frequently.
+Update only `docs/STATUS.md` with current workstreams, recent changes, and blockers. Fast and minimal — run this often.
 
 ## Arguments
 
-Parse `$ARGUMENTS`:
-- If empty: write to `docs/` in current git repo root (`git rev-parse --show-toplevel`)
-- If a local path: write to `<path>/docs/`
-- `--push`: auto-push after commit
-- `--project <name>`: scope to `docs/<name>/STATUS.md`
-
-Examples:
-```
-/sync-status                                    # <git-root>/docs/STATUS.md
-/sync-status --push                             # same + push
-/sync-status ~/other-repo --push                # ~/other-repo/docs/STATUS.md + push
-/sync-status ~/infra-docs --project myapp --push
-```
+Same as /sync-docs: no args = `<git-root>/docs/`, path = `<path>/docs/`, `--push`, `--project <name>`.
 
 ## Steps
-1. Parse arguments, resolve target to `<root>/docs/` directory
-2. Read existing `docs/STATUS.md` (create if missing)
-3. Scan conversation for current work state, recent changes, blockers
-4. Update STATUS.md (merge new info, preserve valid existing content)
-5. Git add + commit: `docs: status update [YYYY-MM-DD HH:MM]`
-6. If `--push`: git push
-7. One-line summary of what changed
+
+1. Resolve target → `<root>/docs/STATUS.md`
+2. Read existing STATUS.md (create from template if missing)
+3. From conversation context: update active workstreams, add recent changes with dates, note any new blockers or resolved issues
+4. Merge — don't remove valid existing content
+5. Git add → commit: `docs: status update [YYYY-MM-DD HH:MM]` → push if `--push`
+6. One-line summary

@@ -1,38 +1,27 @@
 ---
 name: sync-arch
-description: Update ARCHITECTURE.md in docs/. Use after structural changes like new components, config changes, or dependency updates.
+description: Update ARCHITECTURE.md in project docs/. Use after adding/removing components, changing configs, updating dependencies, or modifying data flows. Also use when the user asks about system design or "how does this work".
+argument-hint: "[path] [--push] [--project name]"
 disable-model-invocation: true
 ---
 
-# /sync-arch — Update Architecture Documentation
+# Update Architecture Documentation
 
-Focused update of `ARCHITECTURE.md`. Use after structural changes (new components, config changes, dependency updates).
+Update only `docs/ARCHITECTURE.md` with current system structure. Read actual config files and code — don't rely on conversation memory alone.
 
 ## Arguments
 
-Parse `$ARGUMENTS`:
-- If empty: write to `docs/` in current git repo root (`git rev-parse --show-toplevel`)
-- If a local path: write to `<path>/docs/`
-- `--push`: auto-push after commit
-- `--project <name>`: scope to `docs/<name>/ARCHITECTURE.md`
-
-Examples:
-```
-/sync-arch                                      # <git-root>/docs/ARCHITECTURE.md
-/sync-arch --push                               # same + push
-/sync-arch ~/other-repo --push
-/sync-arch ~/infra-docs --project myapp --push
-```
+Same as /sync-docs: no args = `<git-root>/docs/`, path = `<path>/docs/`, `--push`, `--project <name>`.
 
 ## Steps
-1. Parse arguments, resolve target to `<root>/docs/` directory
-2. Read existing `docs/ARCHITECTURE.md` (create if missing)
-3. Scan conversation and codebase for architectural changes:
+
+1. Resolve target → `<root>/docs/ARCHITECTURE.md`
+2. Read existing ARCHITECTURE.md (create from template if missing)
+3. Scan for architectural changes:
    - New/removed components
-   - Changed data flows
-   - Config changes (read actual config files, not from memory)
+   - Changed data flows or integrations
+   - Config file changes (read the actual files)
    - Dependency version changes
-4. Update ARCHITECTURE.md (merge, preserve valid existing content)
-5. Git add + commit: `docs: architecture update [YYYY-MM-DD HH:MM]`
-6. If `--push`: git push
-7. Summary of architectural changes captured
+4. Update with specifics — component names, file paths, port numbers, config values, version strings
+5. Git add → commit: `docs: architecture update [YYYY-MM-DD HH:MM]` → push if `--push`
+6. Summary of what changed architecturally
