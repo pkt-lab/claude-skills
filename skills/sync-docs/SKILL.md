@@ -1,7 +1,7 @@
 ---
 name: sync-docs
 description: "IMPORTANT: Use this skill to persist work context to structured docs that survive compaction and context resets. Trigger whenever the user says 'sync', 'save state', 'update docs', 'persist context', 'write it down', or any variation. Also trigger proactively before compaction, at natural task boundaries, after major debugging sessions, or when significant architectural/environment changes were made. This is the full sync — updates STATUS.md, ARCHITECTURE.md, ENVIRONMENT.md, and TROUBLESHOOTING.md. If the user only needs a quick status update, suggest /sync-status instead."
-argument-hint: "[path] [--push] [--project name]"
+argument-hint: "[path] [--push] [--project name] [--docs-repo path] [--save-config]"
 disable-model-invocation: true
 ---
 
@@ -15,13 +15,59 @@ Capture the current work state and update structured documentation files in the 
 - Path → write to `<path>/docs/`
 - `--push` → git push after commit
 - `--project <name>` → scope under `docs/<name>/`
+- `--docs-repo <path>` → write docs to a separate repo (auto-derives `--project` from working repo basename)
+- `--save-config` → persist the current `--docs-repo` mapping so future runs auto-resolve
 
 ```
 /sync-docs                                     # <git-root>/docs/
 /sync-docs --push                              # same + push
 /sync-docs ~/other-repo                        # ~/other-repo/docs/
 /sync-docs ~/infra-docs --project myapp --push # ~/infra-docs/docs/myapp/ + push
+/sync-docs --docs-repo ~/private-docs --save-config  # save mapping + write
+/sync-docs --docs-repo ~/private-docs          # one-off write to private repo
 ```
+
+## Private Docs Repo
+
+For public/open-source repos where you don't want environment details, hardware specs, or debugging history committed publicly, use a **private docs repo** as the write target.
+
+### One-Time Setup
+
+```bash
+/sync-docs --docs-repo ~/private-docs --save-config
+```
+
+This persists the mapping in `~/.config/claude-skills/config.json`. All future bare `/sync-docs` runs from this working repo will auto-resolve to the private docs repo.
+
+### Config File
+
+Location: `~/.config/claude-skills/config.json`
+
+```json
+{
+  "docs-repo": {
+    "/home/nvidia/projects/my-public-app": {
+      "path": "/home/nvidia/private-docs",
+      "project": "my-public-app"
+    }
+  }
+}
+```
+
+### Target Resolution Order
+
+1. **Explicit `path` argument** → `<path>/docs/`
+2. **`--docs-repo <path>` flag** → `<path>/docs/<project>/` (project = working repo basename)
+3. **Config file entry** for current git root → use stored `path` + `project`
+4. **Default** → `<git-root>/docs/`
+
+### Git Operations for Remote Docs Repo
+
+When the target is outside the working repo:
+- **Source context** (git log, code reading, services) is always gathered from the **working repo**
+- **Write + commit + push** happens in the **docs repo** using `git -C <docs-repo>`
+- Commit message format: `docs(<project-name>): status update [YYYY-MM-DD HH:MM]`
+- Commit message includes `Source: <working-repo-path>` in the body for traceability
 
 ## Files to Update
 
@@ -59,9 +105,16 @@ This means `git log` serves as the decision history — no separate decisions fi
 
 ## Execution
 
-1. Parse arguments, resolve target to `<root>/docs/` (create if needed)
-2. Gather context from conversation, `git log --oneline -20`, running services, config files, environment — skip what's not relevant
+1. Parse arguments, resolve target using resolution order above:
+   - If `--docs-repo` given: target = `<docs-repo>/docs/<project>/` (project defaults to working repo basename)
+   - Else if config entry exists for current git root: use stored path + project
+   - Else if explicit path: target = `<path>/docs/`
+   - Else: target = `<git-root>/docs/`
+   - If `--save-config`: write/update `~/.config/claude-skills/config.json` with the mapping
+2. Gather context from the **working repo**: conversation, `git log --oneline -20`, running services, config files, environment — skip what's not relevant
 3. Read existing docs in target
 4. Update changed files only
-5. `git add` changed files → commit → push if `--push`
+5. Git operations:
+   - If target is in a different repo: `git -C <docs-repo>` add → commit (format: `docs(<project>): update [YYYY-MM-DD HH:MM]`, body includes `Source: <working-repo-path>`) → push if `--push`
+   - If target is in working repo: `git add` changed files → commit → push if `--push`
 6. Output one-line-per-file summary of what changed

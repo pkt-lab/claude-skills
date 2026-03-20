@@ -8,13 +8,13 @@ When Claude's context gets compacted, the session ends, or you start a fresh age
 
 ## Skills
 
-### `/sync-docs [path] [--push] [--project name]`
+### `/sync-docs [path] [--push] [--project name] [--docs-repo path] [--save-config]`
 Full sync of all documentation: STATUS, ARCHITECTURE, ENVIRONMENT, TROUBLESHOOTING. Run after major changes or at task boundaries.
 
-### `/sync-status [path] [--push] [--project name]`
+### `/sync-status [path] [--push] [--project name] [--docs-repo path] [--save-config]`
 Quick update of STATUS.md only. Lightweight, run frequently — before compaction, switching tasks, or ending a session.
 
-### `/sync-arch [path] [--push] [--project name]`
+### `/sync-arch [path] [--push] [--project name] [--docs-repo path] [--save-config]`
 Update ARCHITECTURE.md only. Run after adding/removing components, changing configs, or updating dependencies.
 
 ### Options
@@ -23,6 +23,8 @@ Update ARCHITECTURE.md only. Run after adding/removing components, changing conf
 |------|-------------|
 | `--push` | Auto `git push` after commit |
 | `--project <name>` | Scope docs under `docs/<name>/` subdirectory |
+| `--docs-repo <path>` | Write docs to a separate repo (auto-derives project from working repo basename) |
+| `--save-config` | Persist `--docs-repo` mapping for this working repo in `~/.config/claude-skills/config.json` |
 
 ## Installation
 
@@ -76,6 +78,33 @@ ln -sfn ~/claude-context-keeper/skills/sync-arch ~/.claude/skills/sync-arch
 /sync-status ~/infra-docs --project backend --push
 ```
 
+## Private Docs Repo
+
+For public/open-source repos where environment details, hardware specs, or debugging history shouldn't be committed publicly, write docs to a **separate private repo**.
+
+### Setup
+
+```bash
+# One-time: save the mapping so future runs auto-resolve
+/sync-docs --docs-repo ~/private-docs --save-config
+
+# From now on, bare commands auto-resolve via config
+/sync-docs          # → ~/private-docs/docs/my-public-app/
+/sync-status        # → ~/private-docs/docs/my-public-app/STATUS.md
+/sync-arch          # → ~/private-docs/docs/my-public-app/ARCHITECTURE.md
+
+# One-off without saving
+/sync-docs --docs-repo ~/private-docs
+```
+
+### How It Works
+
+- Config is stored in `~/.config/claude-skills/config.json` (invisible to public repos)
+- Project name is auto-derived from the working repo's directory basename
+- Source context (git log, code, services) is always gathered from the **working repo**
+- Writes, commits, and pushes happen in the **docs repo**
+- Commit messages include `Source: <working-repo-path>` for traceability
+
 ## Output Structure
 
 ```
@@ -95,6 +124,15 @@ ln -sfn ~/claude-context-keeper/skills/sync-arch ~/.claude/skills/sync-arch
     └── myapp/
         ├── STATUS.md
         └── ...
+
+# With --docs-repo ~/private-docs (from working repo "my-public-app"):
+~/private-docs/
+└── docs/
+    └── my-public-app/
+        ├── STATUS.md
+        ├── ARCHITECTURE.md
+        ├── ENVIRONMENT.md
+        └── TROUBLESHOOTING.md
 ```
 
 Decisions are recorded in **git commit messages** — `git log` is the decision history.

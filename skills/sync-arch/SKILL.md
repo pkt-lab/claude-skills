@@ -1,7 +1,7 @@
 ---
 name: sync-arch
 description: "Update ARCHITECTURE.md with current system structure. Use after adding/removing components, changing configs, updating dependencies, modifying data flows, or when the user asks 'how does this work', 'what's the architecture', 'document the design'. Also trigger when creating new projects, onboarding documentation, or after significant refactoring. Read actual config files and code — don't rely on conversation memory alone."
-argument-hint: "[path] [--push] [--project name]"
+argument-hint: "[path] [--push] [--project name] [--docs-repo path] [--save-config]"
 disable-model-invocation: true
 ---
 
@@ -15,6 +15,10 @@ Update only `docs/ARCHITECTURE.md` with current system structure. Unlike convers
 - Path → write to `<path>/docs/ARCHITECTURE.md`
 - `--push` → git push after commit
 - `--project <name>` → scope under `docs/<name>/ARCHITECTURE.md`
+- `--docs-repo <path>` → write to a separate repo (see /sync-docs for full details)
+- `--save-config` → persist the `--docs-repo` mapping for this working repo
+
+See /sync-docs for full resolution order and private docs repo details.
 
 ## What goes in ARCHITECTURE.md
 
@@ -48,13 +52,15 @@ Name, version, and why each is needed. Pin versions — "latest" is meaningless 
 
 ## Execution
 
-1. Resolve target → `<root>/docs/ARCHITECTURE.md`
+1. Resolve target using /sync-docs resolution order → `<target>/ARCHITECTURE.md`
 2. Read existing ARCHITECTURE.md (create from template if missing)
-3. Scan for architectural changes:
+3. Scan for architectural changes in the **working repo**:
    - New/removed components (check git log, conversation context)
    - Changed data flows or integrations
    - Config file changes (read the actual files, don't guess)
    - Dependency version changes
 4. Update with specifics — component names, file paths, port numbers, config values, version strings
-5. Git add → commit with rationale → push if `--push`
+5. Git operations:
+   - If target is in a different repo: `git -C <docs-repo>` add → commit: `docs(<project>): architecture update [YYYY-MM-DD HH:MM]` (body: `Source: <working-repo-path>`) → push if `--push`
+   - If target is in working repo: git add → commit: `docs: architecture update [YYYY-MM-DD HH:MM]` → push if `--push`
 6. Summary of what changed architecturally
