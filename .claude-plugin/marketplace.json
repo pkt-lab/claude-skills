@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "context-keeper",
-      "source": ".",
+      "source": "./",
       "description": "Persist work context to structured project docs — recover full context after compaction, session switches, or new agent starts",
       "version": "1.0.0",
       "author": { "name": "pkt-lab" },
